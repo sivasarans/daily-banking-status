@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Daily Study Tracker</title>
+
+  <!-- Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    *{
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+      font-family:"Poppins",sans-serif;
+    }
+
+    @keyframes gradient-animation{
+      0%{background-position:0% 50%;}
+      50%{background-position:100% 50%;}
+      100%{background-position:0% 50%;}
+    }
+
+    body{
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+      background:linear-gradient(135deg,#87CEEB,#7FFFD4,#98FB98,#EEE8AA,#FFDAB9,#F08080,#E6E6FA);
+      background-size:300% 300%;
+      animation:gradient-animation 10s ease infinite;
+      color:#1f2937;
+    }
+
+    .tracker-container{
+      width:100%;
+      max-width:420px;
+      background:rgba(255,255,255,0.95);
+      backdrop-filter:blur(6px);
+      border-radius:18px;
+      padding:30px 25px;
+      box-shadow:0 12px 30px rgba(0,0,0,0.15);
+      transition:0.3s;
+    }
+
+    h2{
+      text-align:center;
+      font-size:1.8rem;
+      margin-bottom:20px;
+      color:#1e3a8a;
+      font-weight:700;
+    }
+
+    label{
+      font-size:0.9rem;
+      font-weight:600;
+      margin-top:12px;
+      display:block;
+      color:#374151;
+    }
+
+    select,
+    textarea,
+    input{
+      width:100%;
+      margin-top:6px;
+      padding:12px 14px;
+      font-size:0.95rem;
+      border-radius:10px;
+      border:1px solid #d1d5db;
+      outline:none;
+      transition:0.2s;
+    }
+
+    select:focus,
+    textarea:focus,
+    input:focus{
+      border-color:#3b82f6;
+      box-shadow:0 0 0 2px rgba(59,130,246,0.2);
+    }
+
+    textarea{
+      resize:none;
+      min-height:90px;
+    }
+
+    button{
+      width:100%;
+      margin-top:20px;
+      padding:14px;
+      border:none;
+      border-radius:12px;
+      background:#10b981;
+      color:white;
+      font-size:1rem;
+      font-weight:700;
+      cursor:pointer;
+      transition:0.25s;
+    }
+
+    button:hover{
+      background:#059669;
+      transform:translateY(-2px);
+      box-shadow:0 6px 14px rgba(16,185,129,0.3);
+    }
+
+    button:disabled{
+      background:#9ca3af;
+      cursor:not-allowed;
+      transform:none;
+      box-shadow:none;
+    }
+
+    #status{
+      margin-top:14px;
+      text-align:center;
+      font-size:0.9rem;
+      font-weight:600;
+    }
+
+    @media(max-width:480px){
+      .tracker-container{
+        padding:25px 18px;
+      }
+      h2{
+        font-size:1.5rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="tracker-container">
+    <h2>📘 Daily Study Tracker</h2>
+
+    <form id="dailyForm">
+      <label>Topic</label>
+      <select name="title" required>
+        <option value="">Select Topic</option>
+        <option>Reasoning</option>
+        <option>Aptitude</option>
+        <option>CA</option>
+        <option>English</option>
+      </select>
+
+      <label>Description</label>
+      <textarea name="description" placeholder="What you studied today" required></textarea>
+
+      <label>Hours Spent</label>
+      <input type="number" name="hours" step="0.1" placeholder="Eg: 1.5" required>
+
+      <button type="submit" id="btn">Save Report</button>
+      <div id="status"></div>
+    </form>
+  </div>
+
+<script>
+const form = document.getElementById("dailyForm");
+const btn = document.getElementById("btn");
+const statusText = document.getElementById("status");
+
+form.addEventListener("submit", function(e){
+  e.preventDefault();
+
+  btn.disabled = true;
+  btn.innerText = "Saving...";
+  statusText.innerText = "📤 Saving daily report...";
+  statusText.style.color = "#374151";
+
+  const formData = new FormData(form);
+
+  fetch("https://script.google.com/macros/s/AKfycbzqlw1SWcLEvhDYXxua-Qr6s3vW5qA5p0T63gSIh5vzC1sCXeA0sB274TjMaJNhFOnXSA/exec", {
+    method: "POST",
+    body: formData
+  })
+  .then(res => res.text())
+  .then(text => {
+    if(text === "SUCCESS"){
+      statusText.innerText = "✅ Saved successfully";
+      statusText.style.color = "#059669";
+      form.reset();
+    } else {
+      statusText.innerText = text;
+      statusText.style.color = "#dc2626";
+    }
+  })
+  .catch(()=>{
+    statusText.innerText = "❌ Network error";
+    statusText.style.color = "#dc2626";
+  })
+  .finally(()=>{
+    btn.disabled = false;
+    btn.innerText = "Save Report";
+  });
+});
+</script>
+
+</body>
+</html>
